@@ -126,6 +126,17 @@ func TestValidateStrictTLSProfile_RejectsRC4OnlyLists(t *testing.T) {
 	assert.ErrorIs(t, err, pkgtls.ErrTLSProfileHasNoSupportedCipherSuites)
 }
 
+func TestConfigFromProfileStrict_RejectsInvalidMinimum(t *testing.T) {
+	t.Parallel()
+
+	fn, unsupported, err := pkgtls.ConfigFromProfileStrict(configv1.TLSProfileSpec{
+		MinTLSVersion: "VersionTLS99",
+	})
+	assert.Nil(t, fn)
+	assert.Nil(t, unsupported)
+	assert.ErrorIs(t, err, pkgtls.ErrUnsupportedTLSProfileVersion)
+}
+
 func TestConfigFromProfile_TLS10HonorsOldProfile(t *testing.T) {
 	t.Parallel()
 

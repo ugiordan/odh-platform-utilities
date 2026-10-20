@@ -639,6 +639,16 @@ func TestLoadWithAdherence(t *testing.T) { //nolint:funlen // Startup fallback a
 		require.ErrorContains(t, err, "unsupported TLS profile type")
 	})
 
+	t.Run("NoOpinion unknown profile type fails closed", func(t *testing.T) {
+		t.Parallel()
+
+		apiServer := newClusterAPIServer(&configv1.TLSSecurityProfile{Type: "Unknown"})
+		cli := fake.NewClientBuilder().WithScheme(scheme).WithObjects(apiServer).Build()
+
+		_, err := pkgtls.LoadWithAdherence(context.Background(), cli)
+		require.ErrorContains(t, err, "unsupported TLS profile type")
+	})
+
 	t.Run("strict custom profile without spec fails closed", func(t *testing.T) {
 		t.Parallel()
 

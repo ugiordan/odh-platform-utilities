@@ -39,6 +39,17 @@ func ConfigFromProfile(profile configv1.TLSProfileSpec) (func(*tls.Config), []st
 	return tlsConfig, append(append(unsupported, unsupportedTLS13...), unsupportedUnnameable...)
 }
 
+// ConfigFromProfileStrict validates a TLS profile before converting it to
+// tls.Config options. Unlike ConfigFromProfile, malformed versions and
+// unusable profiles return an error instead of being normalized or applied.
+func ConfigFromProfileStrict(profile configv1.TLSProfileSpec) (func(*tls.Config), []string, error) {
+	if err := ValidateStrictTLSProfile(profile); err != nil {
+		return nil, nil, err
+	}
+	tlsConfig, unsupported := ConfigFromProfile(profile)
+	return tlsConfig, unsupported, nil
+}
+
 // unnameableInsecureCipherIDs is the set of cipher suite IDs from Go's
 // insecure table that no OpenShift TLS profile can name. RC4 suites are
 // negotiable by the Go runtime (they appear in tls.InsecureCipherSuites)
