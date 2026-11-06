@@ -237,7 +237,8 @@ func isTransientAPIError(err error) bool {
 		k8serr.IsServiceUnavailable(err) ||
 		k8serr.IsTimeout(err) ||
 		k8serr.IsServerTimeout(err) ||
-		k8serr.IsTooManyRequests(err) {
+		k8serr.IsTooManyRequests(err) ||
+		k8serr.IsInternalError(err) {
 		return true
 	}
 	// Transport-level errors are network conditions that can resolve on
